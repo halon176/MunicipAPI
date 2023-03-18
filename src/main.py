@@ -3,7 +3,7 @@ from typing import List
 from fastapi import FastAPI
 
 from src.database import database
-from src.data.models import Category, Item, Get_category, Comuni
+
 from src.data.router_regioni import router as router_regioni
 from src.data.router_comuni import router as router_comuni
 
