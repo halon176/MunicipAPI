@@ -1,14 +1,21 @@
-from typing import List, Optional
+from typing import List
 
 from fastapi import FastAPI
 
-from src.database import database, metadata
-from src.data.models import Category, Item
-app = FastAPI()
+from src.database import database
+from src.data.models import Category, Item, Get_category, Comuni
+from src.data.router_regioni import router as router_regioni
+from src.data.router_comuni import router as router_comuni
 
 
+app = FastAPI(
+    title="MunicipAPI"
+)
 
 app.state.database = database
+app.include_router(router_regioni)
+app.include_router(router_comuni)
+
 
 @app.on_event("startup")
 async def startup() -> None:
@@ -22,35 +29,3 @@ async def shutdown() -> None:
     database_ = app.state.database
     if database_.is_connected:
         await database_.disconnect()
-
-
-@app.get("/items/", response_model=List[Item])
-async def get_items():
-    items = await Item.objects.select_related("category").all()
-    return items
-
-
-@app.post("/items/", response_model=Item)
-async def create_item(item: Item):
-    await item.save()
-    return item
-
-
-@app.post("/categories/", response_model=Category)
-async def create_category(category: Category):
-    await category.save()
-    return category
-
-
-@app.put("/items/{item_id}")
-async def get_item(item_id: int, item: Item):
-    item_db = await Item.objects.get(pk=item_id)
-    return await item_db.update(**item.dict())
-
-
-@app.delete("/items/{item_id}")
-async def delete_item(item_id: int, item: Item = None):
-    if item:
-        return {"deleted_rows": await item.delete()}
-    item_db = await Item.objects.get(pk=item_id)
-    return {"deleted_rows": await item_db.delete()}
