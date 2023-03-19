@@ -1,3 +1,5 @@
+from typing import List
+
 from fastapi import APIRouter
 
 from src.data.models import Regioni, Province, Comuni

@@ -6,6 +6,8 @@ from src.database import database
 
 from src.data.router_regioni import router as router_regioni
 from src.data.router_comuni import router as router_comuni
+from src.data.router_province import router as router_province
+
 
 
 app = FastAPI(
@@ -15,6 +17,7 @@ app = FastAPI(
 app.state.database = database
 app.include_router(router_regioni)
 app.include_router(router_comuni)
+app.include_router(router_province)
 
 
 @app.on_event("startup")

@@ -1,13 +1,12 @@
 import ormar
 
-from src.database import database, metadata
+from src.database import MainMeta
 
 
 class Regioni(ormar.Model):
-    class Meta:
-        tablename = "regioni"
-        metadata = metadata
-        database = database
+    class Meta(MainMeta):
+        pass
+
     id: int = ormar.Integer(primary_key=True)
     nome: str = ormar.String(max_length=100, unique=True)
     capoluogo: str = ormar.String(max_length=100)
@@ -16,24 +15,22 @@ class Regioni(ormar.Model):
 
 
 class Province(ormar.Model):
-    class Meta:
-        tablename = "province"
-        metadata = metadata
-        database = database
+    class Meta(MainMeta):
+        pass
+
     id: int = ormar.Integer(primary_key=True)
     nome: str = ormar.String(max_length=100, unique=True)
     sigla: str =ormar.String(max_length=4)
     superficie: int = ormar.Integer()
     abitanti: int = ormar.Integer()
-    regione: Regioni = ormar.ForeignKey(Regioni)
+    regione: Regioni = ormar.ForeignKey(Regioni, related_name="province")
 
 
 
 class Comuni(ormar.Model):
-    class Meta:
-        tablename = "comuni"
-        metadata = metadata
-        database = database
+    class Meta(MainMeta):
+        pass
+
     id: int = ormar.Integer(primary_key=True)
     nome: str = ormar.String(max_length=100)
     istat: int = ormar.Integer()
@@ -41,5 +38,5 @@ class Comuni(ormar.Model):
     CAP: int = ormar.Integer()
     codice_fiscale: str = ormar.String(max_length=5)
     prefisso: int = ormar.Integer()
-    provincia: Province = ormar.ForeignKey(Province)
+    provincia: Province = ormar.ForeignKey(Province, related_name="comuni")
 
