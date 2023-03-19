@@ -1,11 +1,11 @@
 import ormar
+from pydantic import BaseModel
 
-from src.database import MainMeta
-
+from src.database import MainMeta, database, metadata
 
 class Regioni(ormar.Model):
     class Meta(MainMeta):
-        pass
+        tablename = "regioni"
 
     id: int = ormar.Integer(primary_key=True)
     nome: str = ormar.String(max_length=100, unique=True)
@@ -16,7 +16,7 @@ class Regioni(ormar.Model):
 
 class Province(ormar.Model):
     class Meta(MainMeta):
-        pass
+        tablename = "province"
 
     id: int = ormar.Integer(primary_key=True)
     nome: str = ormar.String(max_length=100, unique=True)
@@ -25,11 +25,16 @@ class Province(ormar.Model):
     abitanti: int = ormar.Integer()
     regione: Regioni = ormar.ForeignKey(Regioni, related_name="province")
 
+class Get_province(BaseModel):
+    nome: str
+    sigla: str
+    superficie: int
+    abitanti: int
 
 
 class Comuni(ormar.Model):
     class Meta(MainMeta):
-        pass
+        tablename = "comuni"
 
     id: int = ormar.Integer(primary_key=True)
     nome: str = ormar.String(max_length=100)
@@ -39,4 +44,9 @@ class Comuni(ormar.Model):
     codice_fiscale: str = ormar.String(max_length=5)
     prefisso: int = ormar.Integer()
     provincia: Province = ormar.ForeignKey(Province, related_name="comuni")
+
+class Get_comuni(BaseModel):
+    nome: str
+    CAP: int
+    provincia: str
 
