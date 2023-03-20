@@ -1,11 +1,12 @@
 import ormar
 from pydantic import BaseModel
-
-from src.database import MainMeta
+from src.database import metadata, database
 
 
 class Regioni(ormar.Model):
-    class Meta(MainMeta):
+    class Meta():
+        metadata = metadata
+        database = database
         tablename = "regioni"
 
     id: int = ormar.Integer(primary_key=True)
@@ -16,7 +17,9 @@ class Regioni(ormar.Model):
 
 
 class Province(ormar.Model):
-    class Meta(MainMeta):
+    class Meta():
+        metadata = metadata
+        database = database
         tablename = "province"
 
     id: int = ormar.Integer(primary_key=True)
@@ -27,7 +30,7 @@ class Province(ormar.Model):
     regione: Regioni = ormar.ForeignKey(Regioni, related_name="province")
 
 
-class Get_province(BaseModel):
+class Get_province():
     nome: str
     sigla: str
     superficie: int
@@ -35,7 +38,9 @@ class Get_province(BaseModel):
 
 
 class Comuni(ormar.Model):
-    class Meta(MainMeta):
+    class Meta():
+        metadata = metadata
+        database = database
         tablename = "comuni"
 
     id: int = ormar.Integer(primary_key=True)
