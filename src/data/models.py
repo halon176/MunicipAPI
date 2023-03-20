@@ -4,7 +4,7 @@ from src.database import metadata, database
 
 
 class Regioni(ormar.Model):
-    class Meta():
+    class Meta:
         metadata = metadata
         database = database
         tablename = "regioni"
@@ -17,7 +17,7 @@ class Regioni(ormar.Model):
 
 
 class Province(ormar.Model):
-    class Meta():
+    class Meta:
         metadata = metadata
         database = database
         tablename = "province"
@@ -38,7 +38,7 @@ class GetProvince(BaseModel):
 
 
 class Comuni(ormar.Model):
-    class Meta():
+    class Meta:
         metadata = metadata
         database = database
         tablename = "comuni"

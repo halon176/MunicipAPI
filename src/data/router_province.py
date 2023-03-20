@@ -1,12 +1,14 @@
 from typing import List
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 
+from src.auth.router_user import api_key_auth
 from src.data.models import Province, GetProvince
 
 router = APIRouter(
     prefix="/province",
-    tags=["Province"]
+    tags=["Province"],
+    dependencies=[Depends(api_key_auth)]
 )
 
 
