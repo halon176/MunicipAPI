@@ -2,7 +2,7 @@ from typing import List
 
 from fastapi import APIRouter
 
-from src.data.models import Province, Get_province
+from src.data.models import Province, GetProvince
 
 router = APIRouter(
     prefix="/province",
@@ -10,7 +10,7 @@ router = APIRouter(
 )
 
 
-@router.get("/", response_model=List[Get_province])
+@router.get("/", response_model=List[GetProvince])
 async def list_regioni():
     province = await Province.objects.all()
     return province

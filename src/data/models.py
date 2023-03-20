@@ -30,7 +30,7 @@ class Province(ormar.Model):
     regione: Regioni = ormar.ForeignKey(Regioni, related_name="province")
 
 
-class Get_province():
+class GetProvince(BaseModel):
     nome: str
     sigla: str
     superficie: int
@@ -53,7 +53,7 @@ class Comuni(ormar.Model):
     provincia: Province = ormar.ForeignKey(Province, related_name="comuni")
 
 
-class Get_comuni(BaseModel):
+class GetComuni(BaseModel):
     nome: str
     CAP: int
     provincia: str

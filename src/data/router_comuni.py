@@ -2,7 +2,7 @@ from typing import List
 
 from fastapi import APIRouter
 
-from src.data.models import Comuni, Get_comuni
+from src.data.models import Comuni, GetComuni
 
 router = APIRouter(
     prefix="/comuni",
@@ -10,7 +10,7 @@ router = APIRouter(
 )
 
 
-@router.get("/{CAP}", response_model=List[Get_comuni])
+@router.get("/{CAP}", response_model=List[GetComuni])
 async def get_cap(CAP: int):
     comuni = await Comuni.objects.filter(CAP=CAP).select_related("provincia").all()
     comuni_list = []
