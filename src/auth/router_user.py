@@ -59,6 +59,7 @@ async def create_user(username, email, password):
     return f"Utente {username} è stato creato"
 
 
+
 @router.post("/login")
 async def user_login(username: str, password: str, response: Response):
     user = await User.objects.filter(username=username, is_active=True).first()
@@ -71,4 +72,5 @@ async def user_login(username: str, password: str, response: Response):
     token = secrets.token_urlsafe(16)
     await APIKey.objects.create(apikey=token, username=username, created_at=datetime.now())
     response.headers["X-API-Key"] = token
-    return "Login effettuato con successo"
+    return {"detail": "Login effettuato con successo"}
+

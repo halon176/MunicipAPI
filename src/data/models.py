@@ -57,3 +57,9 @@ class GetComuni(BaseModel):
     nome: str
     CAP: int
     provincia: str
+
+class GetRegioni(BaseModel):
+    nome: str
+    capoluogo: str
+    superficie: int
+    abitanti: int

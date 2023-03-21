@@ -1,4 +1,5 @@
 from fastapi import FastAPI, Depends
+from fastapi.middleware.cors import CORSMiddleware
 
 from src.auth.router_user import router as router_user, api_key_auth
 from src.data.router_comuni import router as router_comuni
@@ -34,3 +35,21 @@ async def shutdown() -> None:
 @app.get("/do_something", dependencies=[Depends(api_key_auth)])
 async def do_something():
     return "API is working OK."
+
+
+# Configurazione CORS per consentire le richieste dal tuo dominio React
+origins = [
+    "http://localhost",
+    "http://localhost:3000",
+    "http://127.0.0.1",
+    "http://127.0.0.1:3000",
+    "http://192.168.1.30:3000"
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"]
+)
