@@ -70,7 +70,7 @@ async def user_login(username: str, password: str, response: Response):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Credenziali errate")
 
     token = secrets.token_urlsafe(16)
-    await APIKey.objects.create(apikey=token, username=username, created_at=datetime.now())
-    response.headers["X-API-Key"] = token
-    return {"detail": "Login effettuato con successo"}
+    await APIKey.objects.create(apikey=token, id_user=user.id, created_at=datetime.now())
+    # response.headers["X-API-Key"] = token
+    return {"detail": "Login effettuato con successo", "X-API-Key": token}
 

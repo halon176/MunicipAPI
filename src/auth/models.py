@@ -16,8 +16,8 @@ class User(ormar.Model):
     username: str = ormar.String(unique=True, max_length=255)
     email: str = ormar.String(index=True, unique=True, max_length=255)
     hashed_password: str = ormar.String(max_length=255)
-    is_active: bool = ormar.Boolean(default=False)
-    is_superuser: bool = ormar.Boolean(default=False)
+    is_active: bool = ormar.Boolean(default=False, nullable=False)
+    is_superuser: bool = ormar.Boolean(default=False, nullable=False)
     created_at: datetime = ormar.DateTime(default=datetime.utcnow)
 
     @property
@@ -39,5 +39,5 @@ class APIKey(ormar.Model):
         tablename = "apikey"
 
     apikey: str = ormar.String(primary_key=True, max_length=22)
-    username: str = ormar.String(unique=True, max_length=255)
+    id_user = ormar.UUID(default=uuid.uuid4)
     created_at: datetime = ormar.DateTime(default=datetime.utcnow)
