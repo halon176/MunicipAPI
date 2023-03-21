@@ -4,7 +4,7 @@ from datetime import datetime
 
 import bcrypt
 from email_validator import validate_email, EmailNotValidError
-from fastapi import APIRouter, Response, HTTPException, status, Depends
+from fastapi import APIRouter, HTTPException, status, Depends
 from fastapi.security import APIKeyHeader
 
 from src.auth.models import User, APIKey
@@ -25,7 +25,6 @@ X_API_KEY = APIKeyHeader(name='X-API-Key')
 
 
 async def api_key_auth(x_api_key: str = Depends(X_API_KEY)):
-    """ takes the X-API-Key header and validate it with the X-API-Key in the database/environment"""
     apikey = await APIKey.objects.filter(apikey=x_api_key).get()
     os.environ['API-KEY'] = apikey.apikey
     if x_api_key != os.environ['API-KEY']:
@@ -36,7 +35,6 @@ async def api_key_auth(x_api_key: str = Depends(X_API_KEY)):
 
 
 async def api_key_auth_admin(x_api_key: str = Depends(X_API_KEY)):
-    """ takes the X-API-Key header and validate it with the X-API-Key in the database/environment"""
     apikey = await APIKey.objects.filter(apikey=x_api_key).get()
     os.environ['API-KEY'] = apikey.apikey
     if x_api_key != os.environ['API-KEY']:
@@ -59,9 +57,8 @@ async def create_user(username, email, password):
     return f"Utente {username} è stato creato"
 
 
-
 @router.post("/login")
-async def user_login(username: str, password: str, response: Response):
+async def user_login(username: str, password: str):
     user = await User.objects.filter(username=username, is_active=True).first()
     if not user:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="L'utente non è attivo o non esiste")
@@ -71,6 +68,4 @@ async def user_login(username: str, password: str, response: Response):
 
     token = secrets.token_urlsafe(16)
     await APIKey.objects.create(apikey=token, id_user=user.id, created_at=datetime.now())
-    # response.headers["X-API-Key"] = token
     return {"detail": "Login effettuato con successo", "X-API-Key": token}
-
