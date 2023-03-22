@@ -57,6 +57,8 @@ class GetComuni(BaseModel):
     nome: str
     CAP: int
     provincia: str
+    codice_fiscale: str
+    prefisso: str
 
 class GetRegioni(BaseModel):
     nome: str

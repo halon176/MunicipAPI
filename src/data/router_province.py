@@ -13,7 +13,7 @@ router = APIRouter(
 
 
 @router.get("/", response_model=List[GetProvince])
-async def list_regioni():
+async def list_province():
     province = await Province.objects.all()
     return province
 
