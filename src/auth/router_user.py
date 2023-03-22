@@ -1,6 +1,7 @@
 import os
 import secrets
 from datetime import datetime
+import ormar
 
 import bcrypt
 from email_validator import validate_email, EmailNotValidError
@@ -61,15 +62,24 @@ async def create_user(username, email, password):
 async def user_login(username: str, password: str):
     user = await User.objects.filter(username=username).first()
     if not user:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="L'utente non esiste")
+        raise HTTPException(status_code=status.HTTP_401_FORBIDDEN, detail="Credenziali errate")
     if not user.check_password(password):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Credenziali errate")
     if not user.check_active():
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Utente non ancora autorizzato")
-    existing_token = await APIKey.objects.filter(id_user=user.id).first()
-    if existing_token:
-        return {"detail": "Login effettuato con successo, chiave esistente", "X-API-Key": existing_token.apikey}
-    else:
+    try:
+        existing_token = await APIKey.objects.filter(id_user=user.id).first()
+        if existing_token.id_user == user.id:
+            return {"detail": "Login effettuato con successo, chiave esistente", "X-API-Key": existing_token.apikey}
+    except ormar.exceptions.NoMatch:
         token = secrets.token_urlsafe(16)
         await APIKey.objects.create(apikey=token, id_user=user.id, created_at=datetime.now())
         return {"detail": "Login effettuato con successo", "X-API-Key": token}
+
+
+
+@router.post("/logout")
+async def remove_key(username: str):
+    user_to_remove = await User.objects.filter(username=username).first()
+    deleted_token = await APIKey.objects.delete(id_user=user_to_remove.id)
+    return f"la chiave {deleted_token}  dell'utente {user_to_remove.username} è stata eliminata"
