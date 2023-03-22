@@ -59,13 +59,17 @@ async def create_user(username, email, password):
 
 @router.post("/login")
 async def user_login(username: str, password: str):
-    user = await User.objects.filter(username=username, is_active=True).first()
+    user = await User.objects.filter(username=username).first()
     if not user:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="L'utente non è attivo o non esiste")
-
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="L'utente non esiste")
     if not user.check_password(password):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Credenziali errate")
-
-    token = secrets.token_urlsafe(16)
-    await APIKey.objects.create(apikey=token, id_user=user.id, created_at=datetime.now())
-    return {"detail": "Login effettuato con successo", "X-API-Key": token}
+    if not user.check_active():
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Utente non ancora autorizzato")
+    existing_token = await APIKey.objects.filter(id_user=user.id).first()
+    if existing_token:
+        return {"detail": "Login effettuato con successo, chiave esistente", "X-API-Key": existing_token.apikey}
+    else:
+        token = secrets.token_urlsafe(16)
+        await APIKey.objects.create(apikey=token, id_user=user.id, created_at=datetime.now())
+        return {"detail": "Login effettuato con successo", "X-API-Key": token}

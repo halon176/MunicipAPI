@@ -31,6 +31,12 @@ class User(ormar.Model):
     def check_password(self, plaintext_password):
         return bcrypt.checkpw(plaintext_password.encode('utf-8'), self.hashed_password.encode('utf-8'))
 
+    def check_active(self):
+        if self.is_active:
+            return True
+        else:
+            return False
+
 
 class APIKey(ormar.Model):
     class Meta:
