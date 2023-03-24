@@ -18,10 +18,24 @@ async def list_province():
     return province
 
 
-@router.get("/{nome}")
+@router.get("/{nome}", response_model=List[GetProvince])
 async def get_provincia(nome: str):
-    province = await Province.objects.filter(nome=nome).get()
+    province = await Province.objects.filter(nome__icontains=nome).all()
     return province
+
+
+@router.get("/superficie_superiore_di/{superficie}", response_model=List[GetProvince])
+async def superficie_superiore_di(superficie: int):
+    province = await Province.objects.filter(superficie__gt=superficie).all()
+    return province
+
+
+@router.get("/abitanti_superiori_a/{superficie}", response_model=List[GetProvince])
+async def abitanti_superiori_a(abitanti: int):
+    province = await Province.objects.filter(superficie__gt=abitanti).all()
+    return province
+
+
 @router.get("/r/{nome}", response_model=List[GetComuni])
 async def comuni_in_provincia(nome: str):
     province = await Province.objects.filter(nome__iexact=nome).get()
@@ -32,5 +46,3 @@ async def comuni_in_provincia(nome: str):
         comune_dict["provincia"] = province.nome
         comuni_list.append(comune_dict)
     return comuni_list
-
-
