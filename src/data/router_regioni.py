@@ -2,7 +2,7 @@ from typing import List
 
 from fastapi import APIRouter, Depends
 
-from src.auth.router_user import api_key_auth
+from src.auth.router_token import api_key_auth
 from src.data.models import Regioni, GetRegioni
 
 router = APIRouter(

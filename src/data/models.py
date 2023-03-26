@@ -27,7 +27,8 @@ class Province(ormar.Model):
     sigla: str = ormar.String(max_length=4)
     superficie: int = ormar.Integer()
     abitanti: int = ormar.Integer()
-    regione: Regioni = ormar.ForeignKey(Regioni, related_name="province")
+    regione_id: int = ormar.ForeignKey(Regioni)
+
 
 
 class GetProvince(BaseModel):
@@ -50,7 +51,7 @@ class Comuni(ormar.Model):
     CAP: int = ormar.Integer()
     codice_fiscale: str = ormar.String(max_length=5)
     prefisso: int = ormar.Integer()
-    provincia: Province = ormar.ForeignKey(Province, related_name="comuni")
+    provincia_id: Province = ormar.ForeignKey(Province)
 
 
 class GetComuni(BaseModel):

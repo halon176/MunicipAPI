@@ -2,7 +2,7 @@ from typing import List
 
 from fastapi import APIRouter, Depends
 
-from src.auth.router_user import api_key_auth
+from src.auth.router_token import api_key_auth
 from src.data.models import Province, GetProvince, GetComuni, Comuni
 
 router = APIRouter(
@@ -14,34 +14,34 @@ router = APIRouter(
 
 @router.get("/", response_model=List[GetProvince])
 async def list_province():
-    province = await Province.objects.all()
-    return province
+    province_obj_list = await Province.objects.all()
+    return province_obj_list
 
 
 @router.get("/{nome}", response_model=List[GetProvince])
 async def get_provincia(nome: str):
-    province = await Province.objects.filter(nome__icontains=nome).all()
-    return province
+    province_obj_list = await Province.objects.filter(nome__icontains=nome).all()
+    return province_obj_list
 
 
 @router.get("/superficie_superiore_di/{superficie}", response_model=List[GetProvince])
 async def superficie_superiore_di(superficie: int):
-    province = await Province.objects.filter(superficie__gt=superficie).all()
-    return province
+    province_obj_list = await Province.objects.filter(superficie__gt=superficie).all()
+    return province_obj_list
 
 
 @router.get("/abitanti_superiori_a/{superficie}", response_model=List[GetProvince])
 async def abitanti_superiori_a(abitanti: int):
-    province = await Province.objects.filter(superficie__gt=abitanti).all()
-    return province
+    province_obj_list = await Province.objects.filter(superficie__gt=abitanti).all()
+    return province_obj_list
 
 
 @router.get("/r/{nome}", response_model=List[GetComuni])
 async def comuni_in_provincia(nome: str):
-    province = await Province.objects.filter(nome__icontains=nome).all()
+    province_obj_list = await Province.objects.filter(nome__icontains=nome).all()
     comuni_list = []
-    for provincia in province:
-        comuni = await Comuni.objects.filter(provincia=provincia.id).all()
+    for provincia in province_obj_list:
+        comuni = await Comuni.objects.filter(provincia_id=provincia.id).all()
         for comune in comuni:
             comune_dict = comune.dict()
             comune_dict["provincia"] = provincia.nome

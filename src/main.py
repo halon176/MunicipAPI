@@ -1,10 +1,12 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from src.auth.router_user import router as router_user
+from src.auth.router_token import router as router_token
 from src.data.router_comuni import router as router_comuni
 from src.data.router_province import router as router_province
 from src.data.router_regioni import router as router_regioni
+from src.auth.router_user import router as router_user
+
 from src.database import database
 
 app = FastAPI(
@@ -15,8 +17,8 @@ app.state.database = database
 app.include_router(router_regioni)
 app.include_router(router_comuni)
 app.include_router(router_province)
+app.include_router(router_token)
 app.include_router(router_user)
-
 
 @app.on_event("startup")
 async def startup() -> None:
