@@ -38,7 +38,7 @@ async def abitanti_superiori_a(abitanti: int):
 
 @router.get("/r/{nome}", response_model=List[GetComuni])
 async def comuni_in_provincia(nome: str):
-    province = await Province.objects.filter(nome__iexact=nome).get()
+    province = await Province.objects.filter(nome__icontains=nome).get()
     comuni = await Comuni.objects.filter(provincia__iexact=province.id).all()
     comuni_list = []
     for comune in comuni:
