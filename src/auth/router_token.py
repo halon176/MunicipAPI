@@ -1,12 +1,16 @@
 import os
 import secrets
+import uuid
 from datetime import datetime
 
-from fastapi import APIRouter, HTTPException, Depends
-from fastapi.security import APIKeyHeader
+import jwt
+from fastapi import APIRouter, HTTPException, Depends, Request
+from fastapi.security import APIKeyHeader, HTTPAuthorizationCredentials
 
 from src.auth.logic import decodeJWT
-from src.auth.models import APIKey, JWTBearer
+from src.auth.models import APIKey, JWTBearer, User
+from src.config import SECRET_AUTH, ALGORITHM
+
 
 router = APIRouter(
     prefix="/token",
@@ -28,21 +32,15 @@ async def api_key_auth(x_api_key: str = Depends(X_API_KEY)):
 
 
 @router.get('/create')
-async def create_token():
-    token = secrets.token_urlsafe(16)
-    decoded_token = decodeJWT(token)
-    user_id = decoded_token.get("user_id")
-    await APIKey.objects.create(apikey=token, user_id= user_id, created_at=datetime.now())
-    return {"X-API-Key": token, "user_id": user_id}
+async def create_token(request: Request):
+    apikey = secrets.token_urlsafe(16)
+    jwt_bearer = JWTBearer()
+    credentials = await jwt_bearer(request)
+    credentials_decoded = decodeJWT(credentials)
+    user = await User.objects.get(username=credentials_decoded["user_id"])
+    await APIKey.objects.create(apikey=apikey, user_id=user.id, created_at=datetime.now())
+    return {"X-API-Key": apikey, "user_id": user.id}
 
 
-# async def api_key_auth_admin(x_api_key: str = Depends(X_API_KEY)):
-#     apikey = await APIKey.objects.filter(apikey=x_api_key).get()
-#     os.environ['API-KEY'] = apikey.apikey
-#     if x_api_key != os.environ['API-KEY']:
-#         raise HTTPException(
-#             status_code=401,
-#             detail="Invalid API Key. Check that you are passing a 'X-API-Key' on your header."
-#         )
-#
-#
+
+
