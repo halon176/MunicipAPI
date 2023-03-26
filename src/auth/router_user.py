@@ -49,13 +49,13 @@ async def user_login(username: str, password: str):
         if existing_token.user_id == user.id:
             return {"detail": "Login effettuato con successo, chiave esistente",
                     "X-API-Key": existing_token.apikey,
-                    "Bearer Token": signJWT(user.username)}
+                    "Bearer Token": signJWT(user.id)}
     except ormar.exceptions.NoMatch:
         token = secrets.token_urlsafe(16)
         await APIKey.objects.create(apikey=token, user_id=user.id, created_at=datetime.now())
         return {"detail": "Login effettuato con successo",
                 "X-API-Key": token,
-                "Bearer Token": signJWT(user.username)}
+                "Bearer Token": signJWT(user.id)}
 
 # @router.post("/logout")
 # async def remove_key(username: str):
