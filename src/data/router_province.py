@@ -40,10 +40,10 @@ async def abitanti_superiori_a(abitanti: int):
 async def comuni_in_provincia(nome: str):
     province = await Province.objects.filter(nome__icontains=nome).all()
     comuni_list = []
-    for province in province:
-        comuni = await Comuni.objects.filter(provincia=province.id).all()
+    for provincia in province:
+        comuni = await Comuni.objects.filter(provincia=provincia.id).all()
         for comune in comuni:
             comune_dict = comune.dict()
-            comune_dict["provincia"] = province.nome
+            comune_dict["provincia"] = provincia.nome
             comuni_list.append(comune_dict)
     return comuni_list
