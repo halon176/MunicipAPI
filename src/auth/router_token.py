@@ -2,13 +2,13 @@ import os
 import secrets
 import uuid
 from datetime import datetime
-from typing import Dict, List
+from typing import List, Optional
 
 from fastapi import APIRouter, HTTPException, Depends, Request
 from fastapi.security import APIKeyHeader
 
 from src.auth.logic import decodeJWT
-from src.auth.models import APIKey, JWTBearer
+from src.auth.models import APIKey, JWTBearer, is_valid_ip_address
 
 router = APIRouter(
     prefix="/token",
@@ -18,14 +18,20 @@ router = APIRouter(
 X_API_KEY = APIKeyHeader(name='X-API-Key')
 
 
-async def api_key_auth(x_api_key: str = Depends(X_API_KEY)):
+async def api_key_auth(request: Request, x_api_key: str = Depends(X_API_KEY)):
     apikey = await APIKey.objects.filter(apikey=x_api_key).get()
     os.environ['API-KEY'] = apikey.apikey
+    if apikey.ip is not None and apikey.ip != read_host(request):
+        raise HTTPException(
+            status_code=401,
+            detail="Indirizzo ip da cui si sta cercando di utilizzare api non è associato ad essa"
+        )
     if x_api_key != os.environ['API-KEY']:
         raise HTTPException(
             status_code=401,
-            detail="Invalid API Key. Check that you are passing a 'X-API-Key' on your header."
+            detail="API Key non valida"
         )
+
 
 
 async def get_uuid_bearer(request) -> uuid.UUID:
@@ -41,12 +47,15 @@ def read_host(request: Request):
     return client_host
 
 
-@router.get('/create', response_model=Dict[str, str])
-async def create_token(request: Request):
+@router.post('/create')
+async def create_token(request: Request, ip: Optional[str] = None):
+    if ip and not is_valid_ip_address(ip):
+        return {"error": "Invalid IP address"}
     apikey = secrets.token_urlsafe(16)
     uuid_user = await get_uuid_bearer(request)
-    await APIKey.objects.create(apikey=apikey, user_id=uuid_user, created_at=datetime.now())
-    return {"X-API-Key": apikey, "user_id": uuid_user}
+    await APIKey.objects.create(apikey=apikey, user_id=uuid_user, ip=ip,  created_at=datetime.now())
+    return {"X-API-Key": apikey}
+
 
 
 @router.get('/apikey_list', response_model=List[APIKey])
