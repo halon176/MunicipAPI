@@ -44,15 +44,4 @@ async def user_login(username: str, password: str):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Credenziali errate")
     if not user.check_active():
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Utente non ancora autorizzato")
-    try:
-        existing_token = await APIKey.objects.filter(user_id=user.id).first()
-        if existing_token.user_id == user.id:
-            return {"detail": "Login effettuato con successo, chiave esistente",
-                    "X-API-Key": existing_token.apikey,
-                    "Bearer Token": signJWT(user.id)}
-    except ormar.exceptions.NoMatch:
-        token = secrets.token_urlsafe(16)
-        await APIKey.objects.create(apikey=token, user_id=user.id, created_at=datetime.now())
-        return {"detail": "Login effettuato con successo",
-                "X-API-Key": token,
-                "Bearer Token": signJWT(user.id)}
+    return signJWT(user.id)
