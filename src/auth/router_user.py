@@ -56,9 +56,3 @@ async def user_login(username: str, password: str):
         return {"detail": "Login effettuato con successo",
                 "X-API-Key": token,
                 "Bearer Token": signJWT(user.id)}
-
-# @router.post("/logout")
-# async def remove_key(username: str):
-#     user_to_remove = await User.objects.filter(username=username).first()
-#     deleted_token = await APIKey.objects.delete(id_user=user_to_remove.id)
-#     return f"la chiave {deleted_token}  dell'utente {user_to_remove.username} è stata eliminata"

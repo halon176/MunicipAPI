@@ -15,7 +15,6 @@ router = APIRouter(
     tags=["Token"],
     dependencies=[Depends(JWTBearer())]
 )
-
 X_API_KEY = APIKeyHeader(name='X-API-Key')
 
 
@@ -35,6 +34,11 @@ async def get_uuid_bearer(request) -> uuid.UUID:
     credentials_decoded = decodeJWT(credentials)
     credentials_decoded_uuid = uuid.UUID(credentials_decoded["user_id"])
     return credentials_decoded_uuid
+
+@router.get("/")
+def read_host(request: Request):
+    client_host = request.client.host
+    return client_host
 
 
 @router.get('/create', response_model=Dict[str, str])
