@@ -30,7 +30,6 @@ class Province(ormar.Model):
     regione_id: int = ormar.ForeignKey(Regioni)
 
 
-
 class GetProvince(BaseModel):
     nome: str
     sigla: str
@@ -60,6 +59,7 @@ class GetComuni(BaseModel):
     provincia: str
     codice_fiscale: str
     prefisso: str
+
 
 class GetRegioni(BaseModel):
     nome: str
