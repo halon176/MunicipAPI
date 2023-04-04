@@ -1,5 +1,6 @@
 import secrets
 from datetime import datetime
+from typing import List
 
 import bcrypt
 import ormar
@@ -16,7 +17,13 @@ router = APIRouter(
 )
 
 
-@router.get("/", dependencies=[Depends(api_key_auth)])
+@router.get("/", dependencies=[Depends(api_key_auth)],
+            response_model=List[User],
+            response_model_exclude={"id",
+                                    "hashed_password",
+                                    "is_active",
+                                    "is_superuser",
+                                    "created_at"})
 async def user_list():
     userlist = await User.objects.all()
     return userlist
