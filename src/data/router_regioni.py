@@ -1,6 +1,7 @@
 from typing import List
 
 from fastapi import APIRouter, Depends
+from fastapi_cache.decorator import cache
 
 from src.auth.router_token import api_key_auth
 from src.data.models import Regioni, GetRegioni
@@ -14,18 +15,21 @@ router = APIRouter(
 
 
 @router.get("/", response_model=List[GetRegioni])
+@cache(expire=60)
 async def list_regioni():
     regioni = await Regioni.objects.all()
     return regioni
 
 
 @router.get("/superficie_superiore_di/{superficie}", response_model=List[GetRegioni])
+@cache(expire=60)
 async def superficie_superiore_di(superficie: int):
     regioni = await Regioni.objects.filter(superficie__gt=superficie).all()
     return regioni
 
 
 @router.get("/abitanti_superiori_a/{abitanti}", response_model=List[GetRegioni])
+@cache(expire=60)
 async def abitanti_superiori_a(abitanti: int):
     regioni = await Regioni.objects.filter(abitanti__gt=abitanti).all()
     return regioni

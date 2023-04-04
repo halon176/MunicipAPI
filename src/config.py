@@ -9,5 +9,7 @@ DB_NAME = os.environ.get("DB_NAME")
 DB_USER = os.environ.get("DB_USER")
 DB_PASS = os.environ.get("DB_PASS")
 
+REDIS_HOST = os.environ.get("REDIS_HOST")
+
 SECRET_AUTH = os.environ.get("SECRET_AUTH")
 ALGORITHM = os.environ.get("ALGORITHM")

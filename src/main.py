@@ -1,13 +1,17 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi_cache import FastAPICache
+from fastapi_cache.backends.redis import RedisBackend
 
 from src.auth.router_token import router as router_token
+from src.config import REDIS_HOST
 from src.data.router_comuni import router as router_comuni
 from src.data.router_province import router as router_province
 from src.data.router_regioni import router as router_regioni
 from src.auth.router_user import router as router_user
 
 from src.database import database
+from redis import asyncio as aioredis
 
 app = FastAPI(
     title="MunicipAPI"
@@ -26,6 +30,10 @@ async def startup() -> None:
     if not database_.is_connected:
         await database_.connect()
 
+@app.on_event("startup")
+async def startup_event():
+    redis = aioredis.from_url(f"redis://{REDIS_HOST}", encoding="utf8", decode_responses=True)
+    FastAPICache.init(RedisBackend(redis), prefix="fastapi-cache")
 
 @app.on_event("shutdown")
 async def shutdown() -> None:

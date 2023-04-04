@@ -1,4 +1,5 @@
 from typing import List
+from fastapi_cache.decorator import cache
 
 from fastapi import APIRouter, Depends
 
@@ -13,6 +14,7 @@ router = APIRouter(
 
 
 @router.get("/", response_model=List[GetComuni])
+@cache(expire=60)
 async def list_comuni():
     comuni_obj_list = await Comuni.objects.select_related("provincia_id").all()
     comuni_list = []
@@ -24,6 +26,7 @@ async def list_comuni():
 
 
 @router.get("/{CAP}", response_model=List[GetComuni])
+@cache(expire=60)
 async def get_cap(CAP: int):
     comuni_obj_list = await Comuni.objects.filter(CAP=CAP).select_related("provincia_id").all()
     comuni_list = []
@@ -35,6 +38,7 @@ async def get_cap(CAP: int):
 
 
 @router.get("/ricerca_comune/{nome}", response_model=List[GetComuni])
+@cache(expire=60)
 async def get_comune(nome: str):
     comuni_obj_list = await Comuni.objects.filter(nome__icontains=nome).select_related("provincia_id").all()
     comuni_list = []
