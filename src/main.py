@@ -14,7 +14,9 @@ from src.database import database
 from redis import asyncio as aioredis
 
 app = FastAPI(
-    title="MunicipAPI"
+    title="MunicipAPI",
+    version="0.2.0",
+    redoc_url=None
 )
 
 app.state.database = database
