@@ -25,7 +25,7 @@ async def superficie_superiore_di(superficie: int):
     return regioni
 
 
-@router.get("/abitanti_superiori_a/{superficie}", response_model=List[GetRegioni])
+@router.get("/abitanti_superiori_a/{abitanti}", response_model=List[GetRegioni])
 async def abitanti_superiori_a(abitanti: int):
-    regioni = await Regioni.objects.filter(superficie__gt=abitanti).all()
+    regioni = await Regioni.objects.filter(abitanti__gt=abitanti).all()
     return regioni

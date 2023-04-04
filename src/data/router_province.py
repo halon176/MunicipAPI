@@ -30,9 +30,9 @@ async def superficie_superiore_di(superficie: int):
     return province_obj_list
 
 
-@router.get("/abitanti_superiori_a/{superficie}", response_model=List[GetProvince])
+@router.get("/abitanti_superiori_a/{abitanti}", response_model=List[GetProvince])
 async def abitanti_superiori_a(abitanti: int):
-    province_obj_list = await Province.objects.filter(superficie__gt=abitanti).all()
+    province_obj_list = await Province.objects.filter(abitanti__gt=abitanti).all()
     return province_obj_list
 
 
