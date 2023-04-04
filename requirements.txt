@@ -21,7 +21,7 @@ MarkupSafe==2.1.2
 ormar==0.12.1
 passlib==1.7.4
 pycparser==2.21
-pydantic==1.10.7
+pydantic
 PyJWT==2.6.0
 PyMySQL==1.0.3
 python-dotenv==1.0.0
