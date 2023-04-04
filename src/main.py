@@ -26,16 +26,19 @@ app.include_router(router_province)
 app.include_router(router_token)
 app.include_router(router_user)
 
+
 @app.on_event("startup")
 async def startup() -> None:
     database_ = app.state.database
     if not database_.is_connected:
         await database_.connect()
 
+
 @app.on_event("startup")
 async def startup_event():
     redis = aioredis.from_url(f"redis://{REDIS_HOST}", encoding="utf8", decode_responses=True)
     FastAPICache.init(RedisBackend(redis), prefix="fastapi-cache")
+
 
 @app.on_event("shutdown")
 async def shutdown() -> None:
@@ -43,16 +46,6 @@ async def shutdown() -> None:
     if database_.is_connected:
         await database_.disconnect()
 
-
-# CORS redirect to work with local react
-origins = [
-    "http://localhost",
-    "http://localhost:3000",
-    "http://127.0.0.1",
-    "http://127.0.0.1:3000",
-    "http://192.168.1.30:3000"
-    "http://192.168.43"
-]
 
 app.add_middleware(
     CORSMiddleware,
