@@ -4,7 +4,7 @@ from typing import List
 from fastapi import APIRouter, Depends, Request, HTTPException
 from ormar.exceptions import NoMatch
 
-from src.auth.models import JWTBearer, User
+from src.auth.models import JWTBearer, User, APIKey
 from src.auth.router_token import get_uuid_bearer
 
 router = APIRouter(
@@ -96,3 +96,19 @@ async def delete_user(user_id: uuid.UUID):
         return {"detail": f"l'utente {user.username} è stato eliminato"}
     except NoMatch:
         raise HTTPException(status_code=404, detail="L'utente specificato non esiste nel database")
+
+
+@router.post("/user_api_key", response_model=List[APIKey])
+async def user_api_key(user_id: uuid.UUID):
+    user = await get_user_obj(user_id)
+    user_apikey_list = await APIKey.objects.filter(user_id=user.id).all()
+    return user_apikey_list
+
+
+# per qualche motivo delete() continua a restituire None anche quando
+# elimina un tot di righe
+@router.post("/delete_all_user_apikey")
+async def delete_all_user_apikey(user_id: uuid.UUID):
+    user = await get_user_obj(user_id)
+    await APIKey.objects.delete(user_id=user.id)
+    return {"detail": f"Tutte le API-Key relative a {user.username} sono state eliminate"}
