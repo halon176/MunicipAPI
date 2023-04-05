@@ -1,15 +1,14 @@
-import secrets
-from datetime import datetime
 from typing import List
 
 import bcrypt
-import ormar
 from email_validator import validate_email, EmailNotValidError
 from fastapi import APIRouter, HTTPException, status, Depends
 
 from src.auth.logic import signJWT
-from src.auth.models import User, APIKey
+from src.auth.models import User
 from src.auth.router_token import api_key_auth
+from ormar.exceptions import NoMatch
+
 
 router = APIRouter(
     prefix="/user",
@@ -44,11 +43,16 @@ async def create_user(username, email, password):
 
 @router.post("/login")
 async def user_login(username: str, password: str):
-    user = await User.objects.filter(username=username).first()
-    if not user:
-        raise HTTPException(status_code=status.HTTP_401_FORBIDDEN, detail="Credenziali errate")
+    try:
+        user = await User.objects.filter(username=username).first()
+    except NoMatch:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Credenziali errate")
+
     if not user.check_password(password):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Credenziali errate")
+
     if not user.check_active():
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Utente non ancora autorizzato")
+
     return signJWT(user.id)
+
