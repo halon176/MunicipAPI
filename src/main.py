@@ -9,6 +9,7 @@ from src.data.router_comuni import router as router_comuni
 from src.data.router_province import router as router_province
 from src.data.router_regioni import router as router_regioni
 from src.auth.router_user import router as router_user
+from src.auth.router_admin import router as router_admin
 
 from src.database import database
 from redis import asyncio as aioredis
@@ -25,6 +26,7 @@ app.include_router(router_comuni)
 app.include_router(router_province)
 app.include_router(router_token)
 app.include_router(router_user)
+app.include_router(router_admin)
 
 
 @app.on_event("startup")

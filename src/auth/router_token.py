@@ -33,13 +33,13 @@ async def api_key_auth(request: Request, x_api_key: str = Depends(X_API_KEY)):
         )
 
 
-
 async def get_uuid_bearer(request) -> uuid.UUID:
     jwt_bearer = JWTBearer()
     credentials = await jwt_bearer(request)
     credentials_decoded = decodeJWT(credentials)
     credentials_decoded_uuid = uuid.UUID(credentials_decoded["user_id"])
     return credentials_decoded_uuid
+
 
 @router.get("/")
 def read_host(request: Request):
@@ -53,9 +53,8 @@ async def create_token(request: Request, ip: Optional[str] = None):
         return {"error": "Invalid IP address"}
     apikey = secrets.token_urlsafe(16)
     uuid_user = await get_uuid_bearer(request)
-    await APIKey.objects.create(apikey=apikey, user_id=uuid_user, ip=ip,  created_at=datetime.now())
+    await APIKey.objects.create(apikey=apikey, user_id=uuid_user, ip=ip, created_at=datetime.now())
     return {"X-API-Key": apikey}
-
 
 
 @router.get('/apikey_list', response_model=List[APIKey])

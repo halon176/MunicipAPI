@@ -1,31 +1,15 @@
-from typing import List
-
 import bcrypt
 from email_validator import validate_email, EmailNotValidError
-from fastapi import APIRouter, HTTPException, status, Depends
+from fastapi import APIRouter, HTTPException, status
+from ormar.exceptions import NoMatch
 
 from src.auth.logic import signJWT
 from src.auth.models import User
-from src.auth.router_token import api_key_auth
-from ormar.exceptions import NoMatch
-
 
 router = APIRouter(
     prefix="/user",
     tags=["User"]
 )
-
-
-@router.get("/", dependencies=[Depends(api_key_auth)],
-            response_model=List[User],
-            response_model_exclude={"id",
-                                    "hashed_password",
-                                    "is_active",
-                                    "is_superuser",
-                                    "created_at"})
-async def user_list():
-    userlist = await User.objects.all()
-    return userlist
 
 
 @router.post("/add_user")
@@ -55,4 +39,3 @@ async def user_login(username: str, password: str):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Utente non ancora autorizzato")
 
     return signJWT(user.id)
-

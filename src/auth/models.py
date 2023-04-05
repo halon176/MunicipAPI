@@ -11,12 +11,14 @@ from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from src.auth.logic import decodeJWT
 from src.database import metadata, database
 
+
 def is_valid_ip_address(ip: str) -> bool:
     try:
         ipaddress.ip_address(ip)
         return True
     except ValueError:
         return False
+
 
 class APIKey(ormar.Model):
     class Meta:
@@ -28,8 +30,6 @@ class APIKey(ormar.Model):
     user_id: uuid.UUID = ormar.UUID(default=None)
     ip: Optional[str] = ormar.String(max_length=45, nullable=True, validators=[is_valid_ip_address])
     created_at: datetime = ormar.DateTime(default=datetime.utcnow)
-
-
 
 
 class User(ormar.Model):
