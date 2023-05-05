@@ -16,7 +16,7 @@ from src.database import database
 app = FastAPI(
     title="MunicipAPI",
     version="0.2.0",
-    docs_url="/api.municipapi/docs",
+    root_path="/api.municipapi",
     redoc_url=None
 )
 
