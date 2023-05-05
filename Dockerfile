@@ -1,5 +1,7 @@
 FROM python:3.10
 
+LABEL org.opencontainers.image.source="https://github.com/halon176/MunicipAPI"
+
 RUN mkdir /municipapi_app
 
 WORKDIR municipapi_app
