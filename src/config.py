@@ -10,3 +10,5 @@ REDIS_HOST = os.environ.get("REDIS_HOST")
 
 SECRET_AUTH = os.environ.get("SECRET_AUTH")
 ALGORITHM = os.environ.get("ALGORITHM")
+
+ROOT_PATH = os.environ.get("ROOT_PATH")

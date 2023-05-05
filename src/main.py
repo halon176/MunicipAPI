@@ -16,7 +16,6 @@ from src.database import database
 app = FastAPI(
     title="MunicipAPI",
     version="0.2.0",
-    root_path="/api.municipapi",
     redoc_url=None
 )
 
@@ -47,12 +46,18 @@ async def shutdown() -> None:
     database_ = app.state.database
     if database_.is_connected:
         await database_.disconnect()
-
+origins = [
+    "http://localhost:3000",
+    "http://127.0.0.1:8000",
+    "0.0.0.0:8000"
+    "localhost:8000"
+    "halon.cc"
+]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=origins,
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"]
-)
+    allow_methods=["GET", "POST", "OPTIONS", "DELETE", "PATCH", "PUT"],
+    allow_headers=["Content-Type", "Set-Cookie", "Access-Control-Allow-Headers", "Access-Control-Allow-Origin",
+                   "Authorization", "X-API-Key"], )
