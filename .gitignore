@@ -1,6 +1,7 @@
 idea
 .idea
-venv
+venv/
+.venv/
 .env
 .directory
 migrations/versions/
