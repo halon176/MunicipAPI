@@ -2,21 +2,21 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi_cache import FastAPICache
 from fastapi_cache.backends.redis import RedisBackend
+from redis import asyncio as aioredis
 
+from src.auth.router_admin import router as router_admin
 from src.auth.router_token import router as router_token
+from src.auth.router_user import router as router_user
 from src.config import REDIS_HOST
 from src.data.router_comuni import router as router_comuni
 from src.data.router_province import router as router_province
 from src.data.router_regioni import router as router_regioni
-from src.auth.router_user import router as router_user
-from src.auth.router_admin import router as router_admin
-
 from src.database import database
-from redis import asyncio as aioredis
 
 app = FastAPI(
     title="MunicipAPI",
     version="0.2.0",
+    docs_url="/api.municipapi/docs",
     redoc_url=None
 )
 
