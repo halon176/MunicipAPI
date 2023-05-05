@@ -24,7 +24,6 @@ httpcore==0.16.3
 httpx==0.23.3
 idna==3.4
 iniconfig==2.0.0
-Jinja2==3.1.2
 makefun==1.13.1
 Mako==1.2.4
 MarkupSafe==2.1.2
