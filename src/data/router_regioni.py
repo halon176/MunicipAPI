@@ -21,14 +21,14 @@ async def list_regioni():
     return regioni
 
 
-@router.get("/superficie_superiore_di/{superficie}", response_model=List[GetRegioni])
+@router.get("/superficie_superiore_di/{superficie}/", response_model=List[GetRegioni])
 @cache(expire=60)
 async def superficie_superiore_di(superficie: int):
     regioni = await Regioni.objects.filter(superficie__gt=superficie).all()
     return regioni
 
 
-@router.get("/abitanti_superiori_a/{abitanti}", response_model=List[GetRegioni])
+@router.get("/abitanti_superiori_a/{abitanti}/", response_model=List[GetRegioni])
 @cache(expire=60)
 async def abitanti_superiori_a(abitanti: int):
     regioni = await Regioni.objects.filter(abitanti__gt=abitanti).all()

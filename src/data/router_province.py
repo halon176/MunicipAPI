@@ -20,28 +20,28 @@ async def list_province():
     return province_obj_list
 
 
-@router.get("/{nome}", response_model=List[GetProvince])
+@router.get("/{nome}/", response_model=List[GetProvince])
 @cache(expire=60)
 async def get_provincia(nome: str):
     province_obj_list = await Province.objects.filter(nome__icontains=nome).all()
     return province_obj_list
 
 
-@router.get("/superficie_superiore_di/{superficie}", response_model=List[GetProvince])
+@router.get("/superficie_superiore_di/{superficie}/", response_model=List[GetProvince])
 @cache(expire=60)
 async def superficie_superiore_di(superficie: int):
     province_obj_list = await Province.objects.filter(superficie__gt=superficie).all()
     return province_obj_list
 
 
-@router.get("/abitanti_superiori_a/{abitanti}", response_model=List[GetProvince])
+@router.get("/abitanti_superiori_a/{abitanti}/", response_model=List[GetProvince])
 @cache(expire=60)
 async def abitanti_superiori_a(abitanti: int):
     province_obj_list = await Province.objects.filter(abitanti__gt=abitanti).all()
     return province_obj_list
 
 
-@router.get("/r/{nome}", response_model=List[GetComuni])
+@router.get("/r/{nome}/", response_model=List[GetComuni])
 @cache(expire=60)
 async def comuni_in_provincia(nome: str):
     province_obj_list = await Province.objects.filter(nome__icontains=nome).all()
