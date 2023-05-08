@@ -6,6 +6,7 @@ from typing import List, Optional
 
 from fastapi import APIRouter, HTTPException, Depends, Request
 from fastapi.security import APIKeyHeader
+from ormar.exceptions import NoMatch
 
 from src.auth.logic import decodeJWT
 from src.auth.models import APIKey, JWTBearer, is_valid_ip_address
@@ -19,14 +20,15 @@ X_API_KEY = APIKeyHeader(name='X-API-Key')
 
 
 async def api_key_auth(request: Request, x_api_key: str = Depends(X_API_KEY)):
-    apikey = await APIKey.objects.filter(apikey=x_api_key).get()
-    os.environ['API-KEY'] = apikey.apikey
-    if apikey.ip is not None and apikey.ip != read_host(request):
-        raise HTTPException(
-            status_code=401,
-            detail="Indirizzo ip da cui si sta cercando di utilizzare api non è associato ad essa"
-        )
-    if x_api_key != os.environ['API-KEY']:
+    try:
+        apikey = await APIKey.objects.filter(apikey=x_api_key).get()
+        os.environ['API-KEY'] = apikey.apikey
+        if apikey.ip is not None and apikey.ip != read_host(request):
+            raise HTTPException(
+                status_code=401,
+                detail="Indirizzo ip da cui si sta cercando di utilizzare api non è associato ad essa"
+            )
+    except NoMatch:
         raise HTTPException(
             status_code=401,
             detail="API Key non valida"
