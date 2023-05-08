@@ -7,6 +7,7 @@ from redis import asyncio as aioredis
 from src.auth.router_admin import router as router_admin
 from src.auth.router_token import router as router_token
 from src.auth.router_user import router as router_user
+from src.auth.router_verify import router as router_verify
 from src.config import REDIS_HOST
 from src.data.router_comuni import router as router_comuni
 from src.data.router_province import router as router_province
@@ -27,6 +28,7 @@ app.include_router(router_province)
 app.include_router(router_token)
 app.include_router(router_user)
 app.include_router(router_admin)
+app.include_router(router_verify)
 
 
 @app.on_event("startup")
