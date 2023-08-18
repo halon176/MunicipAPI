@@ -2,14 +2,16 @@ import os
 import secrets
 import uuid
 from datetime import datetime
-from typing import List, Optional
+from typing import Optional
 
 from fastapi import APIRouter, HTTPException, Depends, Request
 from fastapi.security import APIKeyHeader
-from ormar.exceptions import NoMatch
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.auth.logic import decodeJWT
 from src.auth.models import APIKey, JWTBearer, is_valid_ip_address
+from src.database import get_async_session
 
 router = APIRouter(
     prefix="/token",
@@ -19,16 +21,17 @@ router = APIRouter(
 X_API_KEY = APIKeyHeader(name='X-API-Key')
 
 
-async def api_key_auth(request: Request, x_api_key: str = Depends(X_API_KEY)):
-    try:
-        apikey = await APIKey.objects.filter(apikey=x_api_key).get()
-        os.environ['API-KEY'] = apikey.apikey
-        if apikey.ip is not None and apikey.ip != read_host(request):
-            raise HTTPException(
-                status_code=401,
-                detail="Indirizzo ip da cui si sta cercando di utilizzare api non è associato ad essa"
-            )
-    except NoMatch:
+async def api_key_auth(request: Request, x_api_key: str = Depends(X_API_KEY),
+                       session: AsyncSession = Depends(get_async_session)):
+    query = select(APIKey).where(APIKey.apikey == x_api_key)
+    apikey = (await session.scalars(query)).first()
+    os.environ['API-KEY'] = apikey.apikey
+    if apikey.ip is not None and apikey.ip != read_host(request):
+        raise HTTPException(
+            status_code=401,
+            detail="Indirizzo ip da cui si sta cercando di utilizzare api non è associato ad essa"
+        )
+    if not apikey:
         raise HTTPException(
             status_code=401,
             detail="API Key non valida"
@@ -59,7 +62,7 @@ async def create_token(request: Request, ip: Optional[str] = None):
     return {"X-API-Key": apikey}
 
 
-@router.get('/apikey_list', response_model=List[APIKey])
+@router.get('/apikey_list')
 async def apikey_list(request: Request):
     uuid_user = await get_uuid_bearer(request)
     user_apikey_list = await APIKey.objects.filter(user_id=uuid_user).all()

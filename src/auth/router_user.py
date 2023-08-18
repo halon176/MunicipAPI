@@ -1,7 +1,6 @@
 import bcrypt
 from email_validator import validate_email, EmailNotValidError
 from fastapi import APIRouter, HTTPException, status
-from ormar.exceptions import NoMatch
 
 from src.auth.logic import signJWT
 from src.auth.models import User
@@ -29,7 +28,7 @@ async def create_user(username, email, password):
 async def user_login(username: str, password: str):
     try:
         user = await User.objects.filter(username=username).first()
-    except NoMatch:
+    except Exception:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Credenziali errate")
 
     if not user.check_password(password):

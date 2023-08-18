@@ -1,8 +1,6 @@
 import uuid
-from typing import List
 
 from fastapi import APIRouter, Depends, Request, HTTPException
-from ormar.exceptions import NoMatch
 
 from src.auth.models import JWTBearer, User, APIKey
 from src.auth.router_token import get_uuid_bearer
@@ -36,7 +34,7 @@ async def am_i_admin(request: Request):
     return is_admin
 
 
-@router.get("/user_list", response_model=List[User], response_model_exclude={"hashed_password"})
+@router.get("/user_list")
 async def user_list():
     userlist = await User.objects.all()
     return userlist
@@ -49,7 +47,7 @@ async def activate_user(user_id: uuid.UUID):
         user.is_active = True
         await user.update()
         return {"detail": f"l'utente {user.username} è stato abilitato"}
-    except NoMatch:
+    except Exception:
         raise HTTPException(status_code=404, detail="L'utente specificato non esiste nel database")
 
 
@@ -94,11 +92,11 @@ async def delete_user(user_id: uuid.UUID):
         user = await get_user_obj(user_id)
         await user.delete()
         return {"detail": f"l'utente {user.username} è stato eliminato"}
-    except NoMatch:
+    except Exception:
         raise HTTPException(status_code=404, detail="L'utente specificato non esiste nel database")
 
 
-@router.post("/user_api_key", response_model=List[APIKey])
+@router.post("/user_api_key")
 async def user_api_key(user_id: uuid.UUID):
     user = await get_user_obj(user_id)
     user_apikey_list = await APIKey.objects.filter(user_id=user.id).all()

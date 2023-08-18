@@ -1,15 +1,16 @@
 import ipaddress
 import uuid
+from datetime import datetime
 from typing import Optional
 
-import ormar
-from datetime import datetime
 import bcrypt
 from fastapi import Request, HTTPException
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from sqlalchemy import String, DateTime, Boolean, UUID
+from sqlalchemy.orm import Mapped, mapped_column
 
 from src.auth.logic import decodeJWT
-from src.database import metadata, database
+from src.database import Base
 
 
 def is_valid_ip_address(ip: str) -> bool:
@@ -20,31 +21,25 @@ def is_valid_ip_address(ip: str) -> bool:
         return False
 
 
-class APIKey(ormar.Model):
-    class Meta:
-        metadata = metadata
-        database = database
-        tablename = "apikey"
+class APIKey(Base):
+    __tablename__ = "apikey"
 
-    apikey: str = ormar.String(primary_key=True, max_length=22)
-    user_id: uuid.UUID = ormar.UUID(default=None)
-    ip: Optional[str] = ormar.String(max_length=45, nullable=True, validators=[is_valid_ip_address])
-    created_at: datetime = ormar.DateTime(default=datetime.utcnow)
+    apikey: Mapped[str] = mapped_column(String(22), primary_key=True)
+    user_id: Mapped[Optional[uuid.UUID]] = mapped_column(UUID)
+    ip: Mapped[Optional[str]] = mapped_column(String(45), nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
 
 
-class User(ormar.Model):
-    class Meta:
-        metadata = metadata
-        database = database
-        tablename = "users"
+class User(Base):
+    __tablename__ = "users"
 
-    id: uuid.UUID = ormar.UUID(primary_key=True, default=uuid.uuid4)
-    username: str = ormar.String(unique=True, max_length=255)
-    email: str = ormar.String(index=True, unique=True, max_length=255)
-    hashed_password: str = ormar.String(max_length=255)
-    is_active: bool = ormar.Boolean(default=False, nullable=False)
-    is_superuser: bool = ormar.Boolean(default=False, nullable=False)
-    created_at: datetime = ormar.DateTime(default=datetime.utcnow)
+    id: Mapped[Optional[uuid.UUID]] = mapped_column(UUID, primary_key=True, default=uuid.uuid4)
+    username: Mapped[str] = mapped_column(String(255), unique=True)
+    email: Mapped[str] = mapped_column(String(255), unique=True)
+    hashed_password: Mapped[str] = mapped_column(String(255))
+    is_active: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    is_superuser: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
 
     @property
     def password(self):

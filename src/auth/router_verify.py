@@ -2,7 +2,6 @@ import os
 
 from fastapi import APIRouter, Depends, Request
 from fastapi.security import APIKeyHeader
-from ormar.exceptions import NoMatch
 
 from src.auth.models import APIKey
 from src.auth.router_token import read_host
@@ -24,5 +23,5 @@ async def verify_apikey(request: Request, x_api_key: str = Depends(X_API_KEY)):
             return False
         else:
             return True
-    except NoMatch:
+    except Exception:
         return False

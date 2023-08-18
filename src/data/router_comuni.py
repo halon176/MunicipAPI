@@ -4,7 +4,8 @@ from fastapi import APIRouter, Depends
 from fastapi_cache.decorator import cache
 
 from src.auth.router_token import api_key_auth
-from src.data.models import Comuni, GetComuni
+from src.data.models import Comune
+from src.data.schemas import GetComuni
 
 router = APIRouter(
     prefix="/comuni",
@@ -16,7 +17,7 @@ router = APIRouter(
 @router.get("/", response_model=List[GetComuni])
 @cache(expire=60)
 async def list_comuni():
-    comuni_obj_list = await Comuni.objects.select_related("provincia_id").all()
+    comuni_obj_list = await Comune.objects.select_related("provincia_id").all()
     comuni_list = []
     for comune in comuni_obj_list:
         comune_dict = comune.dict()
@@ -28,7 +29,7 @@ async def list_comuni():
 @router.get("/{CAP}/", response_model=List[GetComuni])
 @cache(expire=60)
 async def get_cap(CAP: int):
-    comuni_obj_list = await Comuni.objects.filter(CAP=CAP).select_related("provincia_id").all()
+    comuni_obj_list = await Comune.objects.filter(CAP=CAP).select_related("provincia_id").all()
     comuni_list = []
     for comune in comuni_obj_list:
         comune_dict = comune.dict()
@@ -40,7 +41,7 @@ async def get_cap(CAP: int):
 @router.get("/ricerca_comune/{nome}/", response_model=List[GetComuni])
 @cache(expire=60)
 async def get_comune(nome: str):
-    comuni_obj_list = await Comuni.objects.filter(nome__icontains=nome).select_related("provincia_id").all()
+    comuni_obj_list = await Comune.objects.filter(nome__icontains=nome).select_related("provincia_id").all()
     comuni_list = []
     for comune in comuni_obj_list:
         comune_dict = comune.dict()
