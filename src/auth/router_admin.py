@@ -15,6 +15,7 @@ router = APIRouter(
 
 
 async def get_user_obj(user_id=uuid.UUID) -> User:
+
     user = await User.objects.get(id=user_id)
     return user
 
@@ -83,7 +84,7 @@ async def revoce_admin(user_id: uuid.UUID):
         user.is_superuser = False
         await user.update()
         return {"detail": f"l'utente {user.username} non è più amministratore"}
-    except NoMatch:
+    except Exception:
         raise HTTPException(status_code=404, detail="L'utente specificato non esiste nel database")
 
 
