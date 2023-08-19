@@ -1,23 +1,23 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
-class GetProvince(BaseModel):
-    nome: str
-    sigla: str
-    superficie: int
-    abitanti: int
+class ProvinciaResponse(BaseModel):
+    nome: str = Field(..., examples=["Roma"])
+    sigla: str = Field(..., examples=["RM"])
+    superficie: int = Field(..., examples=[100])
+    abitanti: int = Field(..., examples=[1000000])
 
 
-class GetComuni(BaseModel):
-    nome: str
-    CAP: int
-    provincia: str
-    codice_fiscale: str
-    prefisso: str
+class ComuneResponse(BaseModel):
+    nome: str = Field(..., examples=["Roma"])
+    CAP: int = Field(..., examples=[10])
+    provincia: str = Field(..., examples=["Roma"])
+    codice_fiscale: str = Field(..., examples=["H501"])
+    prefisso: int = Field(..., examples=[39])
 
 
-class GetRegioni(BaseModel):
-    nome: str
-    capoluogo: str
-    superficie: int
-    abitanti: int
+class RegioneResponse(BaseModel):
+    nome: str = Field(..., examples=["Lazio"])
+    capoluogo: str = Field(..., examples=["Roma"])
+    superficie: int = Field(..., examples=[100])
+    abitanti: int = Field(..., examples=[1000000])

@@ -2,7 +2,8 @@ import uuid
 
 from fastapi import APIRouter, Depends, Request, HTTPException
 
-from src.auth.models import JWTBearer, User, APIKey
+from src.auth.logic import JWTBearer
+from src.auth.models import User, APIKey
 from src.auth.router_token import get_uuid_bearer
 
 router = APIRouter(

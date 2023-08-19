@@ -2,10 +2,13 @@ from typing import List
 
 from fastapi import APIRouter, Depends
 from fastapi_cache.decorator import cache
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.auth.router_token import api_key_auth
 from src.data.models import Comune
-from src.data.schemas import GetComuni
+from src.data.schemas import ComuneResponse
+from src.database import get_async_session
 
 router = APIRouter(
     prefix="/comuni",
@@ -14,37 +17,27 @@ router = APIRouter(
 )
 
 
-@router.get("/", response_model=List[GetComuni])
+@router.get("/", response_model=List[ComuneResponse])
 @cache(expire=60)
-async def list_comuni():
-    comuni_obj_list = await Comune.objects.select_related("provincia_id").all()
-    comuni_list = []
-    for comune in comuni_obj_list:
-        comune_dict = comune.dict()
-        comune_dict["provincia"] = comune.provincia_id.nome
-        comuni_list.append(comune_dict)
+async def list_comuni(session: AsyncSession = Depends(get_async_session)):
+    query = select(Comune)
+    comuni_obj_list = (await session.scalars(query)).all()
+    return comuni_obj_list
+
+
+@router.get("/{CAP}", response_model=List[ComuneResponse])
+@cache(expire=60)
+async def get_cap(cap: int, session: AsyncSession = Depends(get_async_session)):
+    query = select(Comune).join(Comune.provincia).where(Comune.CAP == cap)
+    comuni_list = (await session.scalars(query)).all()
+    comuni_list = [comune.to_json() for comune in comuni_list]
     return comuni_list
 
 
-@router.get("/{CAP}/", response_model=List[GetComuni])
+@router.get("/ricerca_comune/{nome}")
 @cache(expire=60)
-async def get_cap(CAP: int):
-    comuni_obj_list = await Comune.objects.filter(CAP=CAP).select_related("provincia_id").all()
-    comuni_list = []
-    for comune in comuni_obj_list:
-        comune_dict = comune.dict()
-        comune_dict["provincia"] = comune.provincia_id.nome
-        comuni_list.append(comune_dict)
-    return comuni_list
-
-
-@router.get("/ricerca_comune/{nome}/", response_model=List[GetComuni])
-@cache(expire=60)
-async def get_comune(nome: str):
-    comuni_obj_list = await Comune.objects.filter(nome__icontains=nome).select_related("provincia_id").all()
-    comuni_list = []
-    for comune in comuni_obj_list:
-        comune_dict = comune.dict()
-        comune_dict["provincia"] = comune.provincia_id.nome
-        comuni_list.append(comune_dict)
+async def get_comune(nome: str, session: AsyncSession = Depends(get_async_session)):
+    query = select(Comune).where(Comune.nome.ilike(f"%{nome}%"))
+    comuni_list = (await session.scalars(query)).all()
+    comuni_list = [comune.to_json() for comune in comuni_list]
     return comuni_list

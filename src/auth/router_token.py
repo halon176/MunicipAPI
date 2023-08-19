@@ -9,8 +9,8 @@ from fastapi.security import APIKeyHeader
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.auth.logic import decodeJWT
-from src.auth.models import APIKey, JWTBearer, is_valid_ip_address
+from src.auth.logic import decodeJWT, is_valid_ip_address, JWTBearer
+from src.auth.models import APIKey
 from src.database import get_async_session
 
 router = APIRouter(

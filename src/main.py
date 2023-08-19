@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import ORJSONResponse
 from fastapi_cache import FastAPICache
 from fastapi_cache.backends.redis import RedisBackend
 from redis import asyncio as aioredis
@@ -17,7 +18,8 @@ app = FastAPI(
     title="MunicipAPI",
     version="0.2.0",
     # root_path="/api.municipapi",
-    redoc_url=None
+    redoc_url=None,
+    default_response_class=ORJSONResponse
 )
 
 app.include_router(router_regioni)
