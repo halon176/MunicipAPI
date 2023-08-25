@@ -44,8 +44,9 @@ async def superficie_superiore_di(superficie: int, session: AsyncSession = Depen
 @router.get("/abitanti_superiori_a/{abitanti}", response_model=List[ProvinciaResponse])
 @cache(expire=60)
 async def abitanti_superiori_a(abitanti: int, session: AsyncSession = Depends(get_async_session)):
-    province_obj_list = await Provincia.objects.filter(abitanti__gt=abitanti).all()
-    return province_obj_list
+    query = select(Provincia).where(Provincia.abitanti > abitanti)
+    province_list = (await session.scalars(query)).all()
+    return province_list
 
 
 @router.get("/r/{nome}", response_model=List[ComuneResponse])

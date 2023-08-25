@@ -9,6 +9,11 @@ from sqlalchemy.ext.asyncio import async_engine_from_config
 from src.config import DB_HOST, DB_PORT, DB_USER, DB_NAME, DB_PASS
 from src.database import Base
 
+# apparently alembic needs to import all the models in order to work, but my IDE just delete them if they are not used
+# so I have to import them here all the time after impot optimizzation
+# import src.data.models
+# import src.auth.models
+
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config

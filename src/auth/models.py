@@ -46,4 +46,12 @@ class User(Base):
         else:
             return False
 
-
+    def to_json(self):
+        return {
+            "id": self.id,
+            "username": self.username,
+            "email": self.email,
+            "is_active": self.is_active,
+            "is_superuser": self.is_superuser,
+            "created_at": self.created_at
+        }
